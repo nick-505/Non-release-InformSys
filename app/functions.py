@@ -7,3 +7,4 @@ def get_employee():
         sql = f'SELECT id, name, subject, phone, email FROM employees'
         cur.execute(sql)
         return cur.fetchall()
+

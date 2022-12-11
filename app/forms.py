@@ -9,3 +9,4 @@ class EmpForm(FlaskForm):
     emp_phone = StringField('Телефон', validators=[DataRequired()])
     emp_email = StringField('Email', validators=[DataRequired()])
     submit = SubmitField('Добавить')
+
