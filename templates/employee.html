@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type='text/javascript'>
+  $(document).ready(function(){
+
+    $('.edit').click(function(){
+      $('.txtedit').hide();
+      $(this).next('.txtedit').show().focus();
+      $(this).hide();
+  });
+
+  //save
+  $(".txtedit").focusout(function() {
+
+    //get
+    var id = this.id;
+    var split_id = id.split("_");
+    var field_name = split_id[0];
+    var edit_id = split_id[1];
+    var value = $(this).val();
+
+    //hide input
+    $(this).hide();
+
+
+    //hide and change
+    $(this).prev('.edit').show();
+    $(this).prev('.edit').text(value);
+
+    $.ajax({
+      url: '/update',
+      type: 'post',
+      data: { field:field_name, value:value, id:edit_id },
+      success:function(response) {
+        if (response == 1) {
+          console.log('Save successfully');
+        } else {
+          console.log('Not saved.');
+        }
+      }
+    });
+
+  });
+});
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div>
+</div>
+<div>
+  <div class="cont">
+    <table width="100%">
+      <thead>
+        <tr>
+          <th width="10%">ID</th>
+          <th width="20%">ФИО</th>
+          <th width="20%">Предметы</th>
+          <th width="20%">Телефон</th>
+          <th width="20%">Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for employee in employees %}
+        <tr>
+          <td> {{ employee.id }} </td>
+          <td> 
+            <div class="edit"> {{ employee.name }}</div>
+            <input type="text" class="txtedit" value="{{ employee.name }}" id="name_{{employee.name}}"/>
+          </td>
+          <td> 
+            <div class="edit"> {{ employee.subject }}</div>
+            <input type="text" class="txtedit" value="{{ employee.subject }}" id="subject_{{employee.subject}}"/>
+          </td>
+          <td> 
+            <div class="edit"> {{ employee.phone }}</div>
+            <input type="text" class="txtedit" value="{{ employee.phone }}" id="phone_{{employee.phone}}"/>
+          </td>
+          <td> 
+            <div class="edit"> {{ employee.email }}</div>
+            <input type="text" class="txtedit" value="{{ employee.email }}" id="email_{{employee.email}}"/>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <p>Всего сотрудников: {{len}} </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- <script src="static/js/tablesort.js"></script> -->
+<script>
+
+</script>
+{% endblock %}
