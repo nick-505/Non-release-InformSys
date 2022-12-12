@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from app import routes, models
 """ from flask_login import LoginManager """
 
 app = Flask("__name__")
@@ -11,7 +12,6 @@ db = SQLAlchemy(app)
 """ # Логин
 login = LoginManager(app)
  """
-from app import routes, models
 
 if __name__ == '__main__':
     app.run()
