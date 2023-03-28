@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for, flash, session, redirect
 from app import app
-from .models import Employee, User, Lessons, Student, Subject, db
-from .forms import EmpForm, LoginForm
+from .models import Employee, User, Lessons, Student, Subject, db, Request
+from .forms import EmpForm, LoginForm, RequestForm
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required  
 
 ## LOGIN ##
@@ -75,15 +75,70 @@ def emp():
             phone = request.form["emp_phone"],
             email = request.form["emp_email"]
         ) 
-
+        # Временный вариант добавления сотрудника и юзера
+        # Юзеру присваивается username=employee.email
+        # Фиксированный пароль для нового сотрудника password='newuser'
+        # С расчетом на дальнейшее изменение самим сотрудником после первой авторизации
         db.session.add(employee)
         db.session.commit()
-
+        new_user = User(username=request.form["emp_email"], password="newuser",
+                        personal_info_id=employee.id)
+        db.session.add(new_user)
+        db.session.commit()
         return redirect(url_for('emp'))
     
     employees = Employee.query.order_by(Employee.fio)
     subjects = Subject.query.order_by(Subject.subject_name)
 
     return render_template('employee.html',title="Сотрудники", form=form, employees=employees, subjects=subjects)
+
+
+@app.route('/send_request', methods=['POST', 'GET'])
+@login_required
+def send_req():
+    form = RequestForm()
+    if request.method == 'POST':
+
+        sub_list = []
+        for c in request.form.getlist('mycheckbox'):
+            sub = Subject.query.filter_by(subject_name=c).first()
+            sub_list.append(sub)
+
+        student = Student(
+            fio=request.form["stud_fio"],
+            subjects=sub_list,
+            phone=request.form["stud_phone"],
+            email=request.form["stud_email"])
+        
+        db.session.add(student)
+        db.session.commit()
+
+        student = Student.query.filter_by(id=student.id).first()
+        employee = Employee.query.filter_by(id=request.form["emp_name"]).first()
+        
+        stud_list = []
+        for stud in employee.students:
+            stud_list.append(stud)
+        
+        stud_list.append(student)
+        employee.students = stud_list
+        
+        db.session.commit()
+
+        student_id = (Student.query.filter_by(id=student.id).first()).id
+        recipient_id = (User.query.filter_by(personal_info_id=employee.id).first()).id
+        req = Request(
+            student_id=student_id,
+            recipient_id=recipient_id)
+        
+        db.session.add(req)
+        db.session.commit()
+        return redirect(url_for('send_req'))
+
+    subjects = Subject.query.order_by(Subject.subject_name)
+    requests = Request.query.order_by(Request.id)
+    students = Student.query.order_by(Student.id)
+    return render_template('send_request.html', title="Отправка заявки", form=form,
+                           subjects=subjects, requests=requests, students=students)
 
 

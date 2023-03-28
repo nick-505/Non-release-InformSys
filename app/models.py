@@ -36,6 +36,12 @@ class User(UserMixin, db.Model):
     # Информация о репетиторе
     personal_info_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
 
+    # Получение запросов
+    request_received = db.relationship('Request',
+                                        foreign_keys='Request.recipient_id',
+                                        backref='recipient', lazy='dynamic')
+    last_request_read_time = db.Column(db.DateTime)
+
 
     def __repr__(self):
         return "<{}:{}>".format(self.id, self.username)
@@ -45,6 +51,11 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def new_requests(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        return Request.query.filter_by(recipient=self).filter(
+            Request.timestamp > last_read_time).count()
     
 
     def get_id(self):
@@ -59,11 +70,15 @@ class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fio = db.Column(db.Text)
     subjects = db.relationship('Subject', secondary=subEmp, backref=db.backref('employees'))
+    students = db.relationship('Student', secondary=subEmp, backref=db.backref('employees'))
     phone = db.Column(db.Text)
     email = db.Column(db.Text)
 
     def get_id(self):
         return (self.id)
+    
+    def get_fio(self):
+        return (self.fio)
     
 ### SUBJECT MODEL ###
 class Subject(db.Model):
@@ -90,4 +105,11 @@ class Lessons(db.Model):
 
 
 
+class Request(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
+    # def __repr__(self):
+    #     return '<Request {}>'.format(self.body)

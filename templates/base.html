@@ -23,9 +23,9 @@
         <li><a class="menu-link" href="{{ url_for('les') }}"><i class='bx bx-list-ul'></i> Занятия</a></li>
         <li><a class="menu-link" href="{{ url_for('emp') }}"><i class='bx bx-user'></i> Сотрудники</a></li>
         <hr>
-        <li id="user-info"><i class='bx bx-send'></i> Отправить заявку</li>
+        <li id="user-info"><a class="menu-link" href="{{ url_for('send_req') }}"><i class='bx bx-send'></i> Отправить заявку</li>
         <li id="user-info"><i class='bx bxs-report'></i> Отчёт</li>
-        <li id="user-logout""><a class="menu-link" href="{{ url_for('logout') }}"> Выход из аккаунта</a></li>
+        <li id="user-logout"><a class="menu-link" href="{{ url_for('logout') }}"> Выход из аккаунта</a></li>
       </ul>
     </nav>
     <div class="content-wrapper">

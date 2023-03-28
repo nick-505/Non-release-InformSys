@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+<div>
+    <form action="{{ url_for('send_req') }}" method="POST" novalidate>
+        <div class="modal-body">
+                {{ form.hidden_tag() }}
+            <p>
+                {{ form.stud_fio.label }}:<br>
+                {{ form.stud_fio }}
+            </p>
+              {% for subject in subjects %}
+              {{ subject.subject_name }}<input type="checkbox" value={{ subject.subject_name }} name="mycheckbox">
+              {% endfor %}
+            <p>
+                {{ form.stud_phone.label }}:<br>
+                {{ form.stud_phone }}
+            </p>
+            <p>
+                {{ form.stud_email.label }}:<br>
+                {{ form.stud_email }}
+            </p>
+            <p>
+                {{ form.emp_name.label }}:<br>
+                {{ form.emp_name }}
+            </p>
+            <p>
+                {{ form.submit() }}
+            </p>
+        </div>
+</div>
+
+
+
+{% endblock %}

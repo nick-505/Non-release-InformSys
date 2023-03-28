@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField, SubmitField
+from wtforms.fields import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 from .models import Employee
 
@@ -16,3 +16,17 @@ class LoginForm(FlaskForm):
     login_pass = PasswordField('Пароль пользователя')
 
     submit = SubmitField('Войти')
+
+##Request Form##
+class RequestForm(FlaskForm):
+    stud_fio = StringField('Имя студента', validators=[DataRequired()])
+    stud_phone = StringField('Телефон студента', validators=[DataRequired()])
+    stud_email = StringField('Эл. почта студента', validators=[DataRequired()])
+
+    emp_name = SelectField('Имя репетитора', validators=[DataRequired()])
+
+    submit = SubmitField('Отправить')
+
+    def __init__(self, *args, **kwargs):
+        super(RequestForm, self).__init__(*args, **kwargs)
+        self.emp_name.choices = [(c.id, c.fio) for c in Employee.query.all()]
