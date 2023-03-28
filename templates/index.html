@@ -1,10 +1,36 @@
 {% extends "base.html" %}
 
-{% block content %}
-
-
+{% block head %}
 
 {% endblock %}
 
-{% block scripts %}
+{% block content %}
+<div class="content-table">
+<div class="table-responsive">
+  <table class="table table-borderless table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Репетитор</th>
+        <th>Ученик</th>
+        <th>Предмет</th>
+        <th>Дата</th>
+        <th>Цена</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lesson in lessons %}
+      <tr>
+        <td>{{ lesson.id }}</td>
+        <td>{{ lesson.employee_id }}</td>
+        <td>{{ lesson.student_id }}</td>
+        <td>{{ lesson.subject_id }}</td>
+        <td>{{ lesson.date }}</td>
+        <td>{{ lesson.price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
 {% endblock %}

@@ -1,17 +1,14 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from app import routes, models
-""" from flask_login import LoginManager """
 
 app = Flask("__name__")
 
-#SqlAlchemy Database Configuration With Mysql
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:beefymoo@localhost:3306/mydb'
-db = SQLAlchemy(app)
+# SqlAlchemy Database Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///appdata.db'
+# Secret Key
+app.config['SECRET_KEY'] = "my super secret key that no one is supposed to see"
 
-""" # Логин
-login = LoginManager(app)
- """
+from .routes import *
+from .models import *
 
 if __name__ == '__main__':
     app.run()

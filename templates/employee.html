@@ -1,148 +1,104 @@
 {% extends "base.html" %}
 
 {% block head %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script type="text/javascript">
-  $('#add_emp').on('shown.bs.modal', function () {
-    $('#myInput').trigger('focus')
-  });
-</script>
-<script type='text/javascript'>
-  $(document).ready(function () {
-
-    $('.edit').click(function () {
-      $('.txtedit').hide();
-      $(this).next('.txtedit').show().focus();
-      $(this).hide();
-    });
-
-    //save
-    $(".txtedit").focusout(function () {
-
-      //get
-      var id = this.id;
-      var split_id = id.split("_");
-      var field_name = split_id[0];
-      var edit_id = split_id[1];
-      var value = $(this).val();
-
-      //hide input
-      $(this).hide();
-
-
-      //hide and change
-      $(this).prev('.edit').show();
-      $(this).prev('.edit').text(value);
-
-      $.ajax({
-        url: '/update',
-        type: 'post',
-        data: { field: field_name, value: value, id: edit_id },
-        success: function (response) {
-          if (response == 1) {
-            console.log('Save successfully');
-          } else {
-            console.log('Not saved.');
-          }
-        }
-      });
-
-    });
-  });
-</script>
 
 {% endblock %}
 
 {% block content %}
-<div>
-</div>
-<div>
-    
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_emp">Добавить</button>
 
-    <div class="modal fade" id="add_emp" aria-labelledby="add_typeLabel" aria-hidden="true" aria-controls="add_emp" aria-expanded="false">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="add-modalLabel">Добавление сотрудника</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form action="{{ url_for('emp') }}" method="POST" novalidate>
-            <div class="modal-body">
-                {{ form.hidden_tag() }}
-              <p>
-                {{ form.emp_name.label }}:<br>
-                {{ form.emp_name }}
-              </p>
-              <p>
-                {{ form.emp_subject.label }}:<br>
-                {{ form.emp_subject }}
-              </p>
-              <p>
-                {{ form.emp_phone.label }}:<br>
-                {{ form.emp_phone }}
-              </p>
-              <p>
-                {{ form.emp_email.label }}:<br>
-                {{ form.emp_email }}
-              </p>
-              <p>
-                {{ form.submit() }}
-              </p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-          </form>
-        </div>
+<!-- Button trigger modal -->
+<button id="addemp" type="button" class="btn btn-primary" data-toggle="modal"
+  data-target="#exampleModalCenter">
+  Добавить нового сотрудника
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true" data-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Добавление сотрудника</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-    </div>
-    <div>
-     <table width="100%">
-        <thead>
-          <tr>
-            <th width="10%">ID</th>
-            <th width="20%">ФИО</th>
-            <th width="20%">Предметы</th>
-            <th width="20%">Телефон</th>
-            <th width="20%">Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for employee in employees %}
-          <tr>
-            <td> {{ employee.id }} </td>
-            <td>
-              <div class="edit"> {{ employee.name }}</div>
-              <input type="text" class="txtedit" value="{{ employee.name }}" id="name_{{employee.name}}" />
-            </td>
-            <td>
-              <div class="edit"> {{ employee.subject }}</div>
-              <input type="text" class="txtedit" value="{{ employee.subject }}" id="subject_{{employee.subject}}" />
-            </td>
-            <td>
-              <div class="edit"> {{ employee.phone }}</div>
-              <input type="text" class="txtedit" value="{{ employee.phone }}" id="phone_{{employee.phone}}" />
-            </td>
-            <td>
-              <div class="edit"> {{ employee.email }}</div>
-              <input type="text" class="txtedit" value="{{ employee.email }}" id="email_{{employee.email}}" />
-            </td>
-          </tr>
+      <form action="{{ url_for('emp') }}" method="POST" novalidate>
+        <div class="modal-body">
+          {{ form.hidden_tag() }}
+          <p>
+            {{ form.emp_fio.label }}:<br>
+            {{ form.emp_fio }}
+          </p>
+          {% for subject in subjects %}
+          {{ subject.subject_name }}<input type="checkbox" value={{ subject.subject_name }} name="mycheckbox">
           {% endfor %}
-        </tbody>
-      </table>
+          <p>
+            {{ form.emp_phone.label }}:<br>
+            {{ form.emp_phone }}
+          </p>
+          <p>
+            {{ form.emp_email.label }}:<br>
+            {{ form.emp_email }}
+          </p>
+          <p>
+            {{ form.submit() }}
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
     </div>
-    <div>
-      <p>Всего сотрудников: {{len}} </p>
-    </div>
+  </div>
+</div>
 
-  
+<div class="table-responsive">
+  <table class="table table-borderless table-striped">
+    <thead>
+      <tr>
+        <th scope="col">ФИО</th>
+        <th scope="col">Предметы</th>
+        <th scope="col">Студенты</th>
+        <th scope="col">Телефон</th>
+        <th scope="col">Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for employee in employees %}
+      <tr>
+
+        <td align="left">{{ employee.fio }}</td>
+        <td align="left">
+          {% for subject in employee.subjects %}
+          {{ subject.subject_name }}<br>
+          {% endfor %}
+        </td>
+        <td align="left">
+          {% for student in employee.studentsID %}
+          {{ student.fio }}<br>
+          {% endfor %}
+        </td>
+        <td align="left">{{ employee.phone }}</td>
+        <td align="left">{{ employee.email }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+
+
+  </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+
 {% endblock %}
 
-{% block scripts %}
-<!-- <script src="static/js/tablesort.js"></script> -->
-<script>
-
-</script>
-{% endblock %}
